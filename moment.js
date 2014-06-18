@@ -1591,6 +1591,27 @@
         return substituteTimeAgo.apply({}, args);
     }
 
+    function relativeTimeVerbose(milliseconds, withoutSuffix, lang) {
+        var seconds = round(Math.abs(milliseconds) / 1000),
+            minutes = round(seconds / 60),
+            hours = round(minutes / 60),
+            days = round(hours / 24),
+            months = round(days / 30),
+            years = round(days / 365);
+        days = days % 365;
+        hours = hours % 24;
+        minutes = minutes % 60;
+        seconds = seconds % 60;
+        var args = "";
+            if (years > 0) args = years + ' years ';
+            if (months > 0) args += months + ' months ';
+            if (days > 0) args += days + ' days ';
+            if (hours > 0) args += hours + ' hours, ';
+            if (minutes > 0) args += minutes + ' minutes ';
+            if (seconds > 0) args += seconds + ' seconds ';
+        return args;
+    }
+
 
     /************************************
         Week of Year
@@ -2073,8 +2094,16 @@
             return moment.duration(this.diff(time)).lang(this.lang()._abbr).humanize(!withoutSuffix);
         },
 
+        fromVerbose : function (time, withoutSuffix) {
+            return moment.duration(this.diff(time)).lang(this.lang()._abbr).humanizeVerbose(!withoutSuffix);
+        },
+
         fromNow : function (withoutSuffix) {
             return this.from(moment(), withoutSuffix);
+        },
+
+        fromNowVerbose : function (withoutSuffix) {
+            return this.fromVerbose(moment(), withoutSuffix);
         },
 
         calendar : function (time) {
@@ -2454,6 +2483,17 @@
         humanize : function (withSuffix) {
             var difference = +this,
                 output = relativeTime(difference, !withSuffix, this.lang());
+
+            if (withSuffix) {
+                output = this.lang().pastFuture(difference, output);
+            }
+
+            return this.lang().postformat(output);
+        },
+
+        humanizeVerbose : function (withSuffix) {
+            var difference = +this,
+                output = relativeTimeVerbose(difference, !withSuffix, this.lang());
 
             if (withSuffix) {
                 output = this.lang().pastFuture(difference, output);
