@@ -1596,7 +1596,7 @@
             minutes = round(seconds / 60),
             hours = round(minutes / 60),
             days = round(hours / 24),
-            months = round(days / 30),
+            months = round(days % 365 / 30),
             years = round(days / 365);
         days = days % 365;
         hours = hours % 24;
